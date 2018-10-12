@@ -4,11 +4,12 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include <QObject>
 
 #include "Client.h"
 #include "qtsfuclientlib_global.h"
 
+// NOTE: Must include QObject after Client.h
+#include <QObject>
 /**
  * @brief Qt Wrapper of class Client of dm-sfu-client-lib
  */

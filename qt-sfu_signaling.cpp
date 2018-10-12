@@ -1,12 +1,9 @@
 #include "qt-sfu_signaling.h"
 
-QSfuSignaling::QSfuSignaling(QObject *parent) : QObject(parent)  { }
-
-void QSfuSignaling::initialize()
+QSfuSignaling::QSfuSignaling(QObject *parent) : QObject(parent), sfu_(*this)
 {
-  sfu_ = std::make_unique<dm::Client>(*this);
   // Set event handlers for sfu_
-  sfu_->on<dm::Stream::Event::Published>([=](dm::Stream::Event::Published &r) {
+  sfu_.on<dm::Stream::Event::Published>([=](dm::Stream::Event::Published &r) {
     this->sdpInfo_->addStream(r.streamInfo);
     emit streamPublished();
   })
@@ -30,7 +27,7 @@ void QSfuSignaling::initialize()
 
 void QSfuSignaling::createRoom()
 {
-  sfu_->createRoom(roomAccessPin_,
+  sfu_.createRoom(roomAccessPin_,
                         [this](const dm::Room::Created &r) {
     if (!r.error) {
       roomId_ = r.result->id;
@@ -41,7 +38,7 @@ void QSfuSignaling::createRoom()
 
 void QSfuSignaling::createAuditRoom(const std::string& recodingId)
 {
-  sfu_->createAuditRoom(roomAccessPin_, recodingId,
+  sfu_.createAuditRoom(roomAccessPin_, recodingId,
                               [=](const dm::Room::Created &r) {
     if (!r.error) {
       roomId_ = r.result->id;
@@ -53,7 +50,7 @@ void QSfuSignaling::createAuditRoom(const std::string& recodingId)
 
 void QSfuSignaling::destroyRoom()
 {
-  sfu_->destroyRoom(roomId_, [this](const dm::Room::Destroyed &r) {
+  sfu_.destroyRoom(roomId_, [this](const dm::Room::Destroyed &r) {
     emit commandFinished(DestroyRoom, r.toString());
   });
 }
@@ -61,7 +58,7 @@ void QSfuSignaling::destroyRoom()
 void QSfuSignaling::joinRoom(const std::string& sdp)
 {
   auto offerInfo = SDPInfo::parse(sdp);
-  sfu_->join(roomId_, roomAccessPin_, offerInfo,
+  sfu_.join(roomId_, roomAccessPin_, offerInfo,
                   [this](const dm::Participant::Joined &r) {
     if (!r.error) {
       sdpInfo_ = r.result->sdpInfo;
@@ -75,7 +72,7 @@ void QSfuSignaling::joinRoom(const std::string& sdp)
 
 void QSfuSignaling::leaveRoom()
 {
-  sfu_->leave(roomId_, [this](const dm::Participant::Left &r) {
+  sfu_.leave(roomId_, [this](const dm::Participant::Left &r) {
     emit commandFinished(LeaveRoom, r.toString());
   });
 }

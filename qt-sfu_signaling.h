@@ -2,7 +2,6 @@
 #define QSFUSIGNALING_H
 
 #include <functional>
-#include <memory>
 #include <string>
 
 #include "Client.h"
@@ -29,7 +28,6 @@ public:
   explicit QSfuSignaling(QObject *parent = nullptr);
   virtual ~QSfuSignaling() = default;
 
-  void initialize();
   void createRoom();
   void createAuditRoom(const std::string &recodingId);
   void destroyRoom();
@@ -42,7 +40,7 @@ public:
   std::string getAnswerSdp() const;
 
 private:
-  std::unique_ptr<dm::Client> sfu_ = nullptr;
+  dm::Client sfu_;
   std::string roomId_;
   std::string roomAccessPin_ = "pin";
   SDPInfo::shared sdpInfo_;

@@ -97,12 +97,12 @@ std::string QSfuSignaling::getAnswerSdp() const
   return sdpInfo_->toString();
 }
 
-void send(const std::string& message)
+void QSfuSignaling::send(const std::string& message)
 {
 
 }
 
-void onmessage(const std::function<bool (const std::string&)>& callback)
+void QSfuSignaling::onmessage(const std::function<bool (const std::string&)>& callback)
 {
 
 }

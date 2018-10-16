@@ -48,7 +48,7 @@ private:
   virtual void send(const std::string &message) override;
   virtual void onmessage(const std::function<bool(const std::string &message)> &callback) override;
 
-signals:
+Q_SIGNALS:
   /**
    * @brief Signal used to get the status of the command
    * @param cmdId Command ID
@@ -61,8 +61,6 @@ signals:
   void participantLeft(const std::string &roomId, const std::string &clientId, const std::string &reason);
   void participantKicked(const std::string &roomId, const std::string &reason);
   void activeSpeakerChanged(const std::string &roomId, const std::string &clientId);
-
-public slots:
 };
 
 #endif // QSFUSIGNALING_H

@@ -1,27 +1,27 @@
-#include "qt-sfu_signaling.h"
+#include "qt_sfu_signaling.h"
 
 QSfuSignaling::QSfuSignaling(QObject *parent) : QObject(parent), sfu_(*this)
 {
   // Set event handlers for sfu_
   sfu_.on<dm::Stream::Event::Published>([=](dm::Stream::Event::Published &r) {
     this->sdpInfo_->addStream(r.streamInfo);
-    emit streamPublished();
+    Q_EMIT streamPublished();
   })
   .on<dm::Stream::Event::Unpublished>([=](dm::Stream::Event::Unpublished &r) {
     sdpInfo_->removeStream(r.streamId);
-    emit streamUnpublished(r.streamId);
+    Q_EMIT streamUnpublished(r.streamId);
   })
   .on<dm::Participant::Event::Joined>([=](dm::Participant::Event::Joined &r) {
-    emit participantJoined(r.roomId, r.clientId, r.reason);
+    Q_EMIT participantJoined(r.roomId, r.clientId, r.reason);
   })
   .on<dm::Participant::Event::Left>([=](dm::Participant::Event::Left &r) {
-    emit participantLeft(r.roomId, r.clientId, r.reason);
+    Q_EMIT participantLeft(r.roomId, r.clientId, r.reason);
   })
   .on<dm::Participant::Event::Kicked>([=](dm::Participant::Event::Kicked &r) {
-    emit participantKicked(r.roomId, r.reason);
+    Q_EMIT participantKicked(r.roomId, r.reason);
   })
   .on<dm::Participant::Event::ActiveSpeakerChanded>([=](dm::Participant::Event::ActiveSpeakerChanded &r) {
-    emit activeSpeakerChanged(r.roomId, r.clientId);
+    Q_EMIT activeSpeakerChanged(r.roomId, r.clientId);
   });
 }
 
@@ -32,7 +32,7 @@ void QSfuSignaling::createRoom()
     if (!r.error) {
       roomId_ = r.result->id;
     }
-    emit commandFinished(CreateRoom, r.toString());
+    Q_EMIT commandFinished(CreateRoom, r.toString());
   });
 }
 
@@ -43,7 +43,7 @@ void QSfuSignaling::createAuditRoom(const std::string& recodingId)
     if (!r.error) {
       roomId_ = r.result->id;
     }
-    emit commandFinished(CreateAuditRoom, r.toString());
+    Q_EMIT commandFinished(CreateAuditRoom, r.toString());
     return;
   });
 }
@@ -51,7 +51,7 @@ void QSfuSignaling::createAuditRoom(const std::string& recodingId)
 void QSfuSignaling::destroyRoom()
 {
   sfu_.destroyRoom(roomId_, [this](const dm::Room::Destroyed &r) {
-    emit commandFinished(DestroyRoom, r.toString());
+    Q_EMIT commandFinished(DestroyRoom, r.toString());
   });
 }
 
@@ -66,14 +66,14 @@ void QSfuSignaling::joinRoom(const std::string& sdp)
         sdpInfo_->addStream(stream);
       }
     }
-    emit commandFinished(JoinRoom, r.toString());
+    Q_EMIT commandFinished(JoinRoom, r.toString());
   });
 }
 
 void QSfuSignaling::leaveRoom()
 {
   sfu_.leave(roomId_, [this](const dm::Participant::Left &r) {
-    emit commandFinished(LeaveRoom, r.toString());
+    Q_EMIT commandFinished(LeaveRoom, r.toString());
   });
 }
 

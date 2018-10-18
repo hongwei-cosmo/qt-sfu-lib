@@ -5,14 +5,13 @@
 #include <string>
 
 #include "Client.h"
-#include "qtsfuclientlib_global.h"
 
 // NOTE: Must include QObject after Client.h
 #include <QObject>
 /**
  * @brief Qt Wrapper of class Client of dm-sfu-client-lib
  */
-class QTSFUCLIENTLIBSHARED_EXPORT QSfuSignaling :
+class QSfuSignaling :
     public QObject,
     public dm::Client::Transport
 {
@@ -28,6 +27,11 @@ public:
   explicit QSfuSignaling(QObject *parent = nullptr);
   virtual ~QSfuSignaling() = default;
 
+  std::string getRoomId() const;
+  std::string getAnswerSdp() const;
+  void gotMsgFromSfu(const std::string &message) const;
+
+public Q_SLOTS:
   void createRoom();
   void createAuditRoom(const std::string &recodingId);
   void destroyRoom();
@@ -35,18 +39,7 @@ public:
   void leaveRoom();
 
   void setRoomId(const std::string &roomId_);
-  std::string getRoomId() const;
   void setRoomAccessPin(const std::string &pin);
-  std::string getAnswerSdp() const;
-
-private:
-  dm::Client sfu_;
-  std::string roomId_;
-  std::string roomAccessPin_ = "pin";
-  SDPInfo::shared sdpInfo_;
-
-  virtual void send(const std::string &message) override;
-  virtual void onmessage(const std::function<bool(const std::string &message)> &callback) override;
 
 Q_SIGNALS:
   /**
@@ -61,6 +54,17 @@ Q_SIGNALS:
   void participantLeft(const std::string &roomId, const std::string &clientId, const std::string &reason);
   void participantKicked(const std::string &roomId, const std::string &reason);
   void activeSpeakerChanged(const std::string &roomId, const std::string &clientId);
+  void sendMessgeToSfu(const std::string &message);
+
+private:
+  dm::Client sfu_;
+  std::string roomId_;
+  std::string roomAccessPin_ = "pin";
+  SDPInfo::shared sdpInfo_;
+  std::function<bool (const std::string&)> callback_ = nullptr;
+
+  virtual void send(const std::string &message) override;
+  virtual void onmessage(const std::function<bool(const std::string &message)> &callback) override;
 };
 
 #endif // QSFUSIGNALING_H

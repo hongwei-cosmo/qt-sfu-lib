@@ -77,7 +77,7 @@ void QSfuSignaling::leaveRoom()
   });
 }
 
-void QSfuSignaling::setRoomId(const std::string& roomId)
+void QSfuSignaling::setRoomId(const std::string &roomId)
 {
   roomId_ = roomId;
 }
@@ -87,7 +87,7 @@ std::string QSfuSignaling::getRoomId() const
   return roomId_;
 }
 
-void QSfuSignaling::setRoomAccessPin(const std::string& pin)
+void QSfuSignaling::setRoomAccessPin(const std::string &pin)
 {
   roomAccessPin_ = pin;
 }
@@ -97,12 +97,17 @@ std::string QSfuSignaling::getAnswerSdp() const
   return sdpInfo_->toString();
 }
 
-void QSfuSignaling::send(const std::string& message)
+void QSfuSignaling::gotMsgFromSfu(const std::string &message) const
 {
-
+  callback_(message);
 }
 
-void QSfuSignaling::onmessage(const std::function<bool (const std::string&)>& callback)
+void QSfuSignaling::send(const std::string& message)
 {
+  Q_EMIT sendMessgeToSfu(message);
+}
 
+void QSfuSignaling::onmessage(const std::function<bool (const std::string&)> &callback)
+{
+  callback_ = callback;
 }

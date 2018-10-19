@@ -6,6 +6,12 @@ project(QtDmSfuClientLib)
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_CXX_STANDARD 14 )
 
+if (WIN32)
+  # Custom source list for Windows Desktop
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+endif()
+
 find_package( Qt5Core REQUIRED )
 find_package( dm-sfu-signaling REQUIRED )
 

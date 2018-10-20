@@ -2,6 +2,7 @@
 #define QSFUSIGNALING_H
 
 #include <functional>
+#include <memory>
 #include <string>
 
 #include "Client.h"
@@ -57,7 +58,7 @@ Q_SIGNALS:
   void sendMessgeToSfu(const std::string &message);
 
 private:
-  dm::Client sfu_;
+  std::unique_ptr<dm::Client> sfu_;
   std::string roomId_;
   std::string roomAccessPin_ = "pin";
   SDPInfo::shared sdpInfo_;

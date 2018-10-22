@@ -23,7 +23,16 @@ public:
     CreateAuditRoom,
     DestroyRoom,
     JoinRoom,
-    LeaveRoom
+    SeekParticipant,
+    LimitParticipant,
+    LeaveRoom,
+    LastNNone,
+    LastNOne,
+    LastNTwo,
+    LastNThree,
+    LastNFour,
+    LastNAll,
+    CountOfCmds
   };
   explicit QSfuSignaling(QObject *parent = nullptr);
   virtual ~QSfuSignaling() = default;
@@ -36,11 +45,19 @@ public Q_SLOTS:
   void createRoom();
   void createAuditRoom(const std::string &recodingId);
   void destroyRoom();
+
   void joinRoom(const std::string &sdp);
+  void seekParticipant(uint64_t offset);
+  void limitParticipant(uint16_t bitrate);
   void leaveRoom();
 
-  void setRoomId(const std::string &roomId_);
-  void setRoomAccessPin(const std::string &pin);
+  void cameraStream();
+  void desktopStream();
+
+  void lastN(int n);
+
+  void setRoomId(std::string roomId_);
+  void setRoomAccessPin(std::string pin);
 
 Q_SIGNALS:
   /**

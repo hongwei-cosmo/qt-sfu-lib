@@ -37,7 +37,7 @@ void QSfuSignaling::createRoom()
     if (!r.error) {
       roomId_ = r.result->id;
     }
-    Q_EMIT commandFinished(CreateRoom, r.toString());
+    Q_EMIT commandFinished(__func__, r.toString());
   });
 }
 
@@ -49,7 +49,7 @@ void QSfuSignaling::createAuditRoom(const std::string& recodingId)
     if (!r.error) {
       roomId_ = r.result->id;
     }
-    Q_EMIT commandFinished(CreateAuditRoom, r.toString());
+    Q_EMIT commandFinished(__func__, r.toString());
   });
 }
 
@@ -57,7 +57,7 @@ void QSfuSignaling::destroyRoom()
 {
   qDebug("[%s]", __func__);
   sfu_->destroyRoom(roomId_, [this](const dm::Room::Destroyed &r) {
-    Q_EMIT commandFinished(DestroyRoom, r.toString());
+    Q_EMIT commandFinished(__func__, r.toString());
   });
 }
 
@@ -73,7 +73,7 @@ void QSfuSignaling::joinRoom(const std::string& sdp)
         sdpInfo_->addStream(stream);
       }
     }
-    Q_EMIT commandFinished(JoinRoom, r.toString());
+    Q_EMIT commandFinished(__func__, r.toString());
   });
 }
 
@@ -81,7 +81,7 @@ void QSfuSignaling::seekParticipant(uint64_t offset)
 {
   qDebug("[%s]", __func__);
   sfu_->seek(roomId_, offset, [this](const dm::Participant::Seeked &r) {
-    Q_EMIT commandFinished(SeekParticipant, r.toString());
+    Q_EMIT commandFinished(__func__, r.toString());
   });
 }
 
@@ -89,7 +89,7 @@ void QSfuSignaling::limitParticipant(uint16_t bitrate)
 {
   qDebug("[%s]", __func__);
   sfu_->limit(roomId_, bitrate, [this](const dm::Participant::Limited &r) {
-    Q_EMIT commandFinished(LimitParticipant, r.toString());
+    Q_EMIT commandFinished(__func__, r.toString());
   });
 
 }
@@ -98,7 +98,7 @@ void QSfuSignaling::leaveRoom()
 {
   qDebug("[%s]", __func__);
   sfu_->leave(roomId_, [this](const dm::Participant::Left &r) {
-    Q_EMIT commandFinished(LeaveRoom, r.toString());
+    Q_EMIT commandFinished(__func__, r.toString());
   });
 }
 
@@ -117,33 +117,33 @@ void QSfuSignaling::lastN(int n)
   switch (n) {
   case 0:
     sfu_->lastN(roomId_, n, {}, 0, 1, {}, [this](const dm::Participant::LastN &r) {
-      Q_EMIT commandFinished(LastNNone, r.toString());
+      Q_EMIT commandFinished(__func__, r.toString());
     });
     break;
   case 1:
     sfu_->lastN(roomId_, n, {1}, 1, 1, {1}, [this](const dm::Participant::LastN &r) {
-      Q_EMIT commandFinished(LastNOne, r.toString());
+      Q_EMIT commandFinished(__func__, r.toString());
     });
     break;
   case 2:
     sfu_->lastN(roomId_, n, {4, 1}, 1, 1, {2}, [this](const dm::Participant::LastN &r) {
-      Q_EMIT commandFinished(LastNTwo, r.toString());
+      Q_EMIT commandFinished(__func__, r.toString());
     });
     break;
   case 3:
     sfu_->lastN(roomId_, n, {4, 1, 1}, 3, 3, {1, 1, 1}, [this](const dm::Participant::LastN &r) {
-      Q_EMIT commandFinished(LastNThree, r.toString());
+      Q_EMIT commandFinished(__func__, r.toString());
     });
     break;
   case 4:
     sfu_->lastN(roomId_, n, {3, 1, 1, 1}, 1, 4, {1}, [this](const dm::Participant::LastN &r) {
-      Q_EMIT commandFinished(LastNFour, r.toString());
+      Q_EMIT commandFinished(__func__, r.toString());
     });
     break;
   case -1:
   default:
     sfu_->lastN(roomId_, -1, {}, -1, 1, {}, [this](const dm::Participant::LastN &r) {
-      Q_EMIT commandFinished(LastNAll, r.toString());
+      Q_EMIT commandFinished(__func__, r.toString());
     });
     break;
   }
@@ -171,6 +171,11 @@ std::string QSfuSignaling::getAnswerSdp() const
 {
   qDebug("[%s]", __func__);
   return sdpInfo_->toString();
+}
+
+std::string QSfuSignaling::getRoomAccessPin() const
+{
+  return roomAccessPin_;
 }
 
 void QSfuSignaling::gotMsgFromSfu(const std::string &message) const
